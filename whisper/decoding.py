@@ -590,6 +590,8 @@ class DecodingTask:
         sum_logprobs: Tensor = torch.zeros(n_batch, device=audio_features.device)
         no_speech_probs = [np.nan] * n_batch
 
+        ts_tokens = None  # <----add this
+
         try:
             for i in range(self.sample_len):
                 logits = self.inference.logits(tokens, audio_features)
@@ -600,6 +602,14 @@ class DecodingTask:
 
                 # now we need to consider the logits at the last token only
                 logits = logits[:, -1]
+
+                logits_clone = torch.clone(logits)
+                for k in range(tokens.shape[0]):  # <----add this
+                    logits_clone[k, : self.tokenizer.timestamp_begin] = -np.inf  # <----add this
+                ts_token = torch.argmax(logits_clone,  dim=-1)[:, None]  # <----add this
+                ts_tokens = ts_token if ts_tokens is None else torch.cat([ts_tokens, ts_token], dim=-1)  # <----add this
+                del logits_clone  # <----add this
+
 
                 # apply the logit filters, e.g. for suppressing or applying penalty to
                 for logit_filter in self.logit_filters:
@@ -613,7 +623,7 @@ class DecodingTask:
         finally:
             self.inference.cleanup_caching()
 
-        return tokens, sum_logprobs, no_speech_probs
+        return tokens, sum_logprobs, no_speech_probs, ts_tokens
 
     @torch.no_grad()
     def run(self, mel: Tensor) -> List[DecodingResult]:

@@ -457,7 +457,7 @@ class EnglishSpellingNormalizer:
 
 class EnglishTextNormalizer:
     def __init__(self):
-        self.ignore_patterns = r"\b(hmm|mm|mhm|mmm|uh|um)\b"
+        # self.ignore_patterns = r"\b(hmm|mm|mhm|mmm|uh|um)\b"
         self.replacers = {
             # common contractions
             r"\bwon't\b": "will not",
