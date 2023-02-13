@@ -70,6 +70,7 @@ def available_models() -> List[str]:
 
 
 def load_model(name: str, device: Optional[Union[str, torch.device]] = None, download_root: str = None, in_memory: bool = False) -> Whisper:
+    print("!!!loading model here!!")
     """
     Load a Whisper ASR model
 
@@ -117,6 +118,7 @@ def load_model(name: str, device: Optional[Union[str, torch.device]] = None, dow
 
     dims = ModelDimensions(**checkpoint["dims"])
     model = Whisper(dims)
+    print("!!!loading the model")
     model.load_state_dict(checkpoint["model_state_dict"])
 
     return model.to(device)
