@@ -623,6 +623,10 @@ class DecodingTask:
         finally:
             self.inference.cleanup_caching()
 
+        print("!!!ts_tokens:")
+        print(ts_tokens)
+        print("!!!tokens: ")
+        print(tokens)
         return tokens, sum_logprobs, no_speech_probs, ts_tokens
 
     @torch.no_grad()
